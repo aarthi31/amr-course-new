@@ -1,0 +1,9 @@
+- "left reads":
+  - "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new/results/metaspades/ERR9922937/corrected/ERR9922937_filtered_1.fastq00.0_0.cor.fastq.gz"
+  "number": !!int "1"
+  "orientation": "fr"
+  "right reads":
+  - "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new/results/metaspades/ERR9922937/corrected/ERR9922937_filtered_2.fastq00.0_0.cor.fastq.gz"
+  "single reads":
+  - "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new/results/metaspades/ERR9922937/corrected/ERR9922937_filtered__unpaired00.0_0.cor.fastq.gz"
+  "type": "paired-end"

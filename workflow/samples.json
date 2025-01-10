@@ -1,0 +1,18 @@
+{
+    "ERR9922933": {
+        "1": [
+            "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course/data/ERR9922933_1.fastq.gz"
+        ],
+        "2": [
+            "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course/data/ERR9922933_2.fastq.gz"
+        ]
+    },
+    "ERR9922937": {
+        "1": [
+            "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course/data/ERR9922937_1.fastq.gz"
+        ],
+        "2": [
+            "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course/data/ERR9922937_2.fastq.gz"
+        ]
+    }
+}
