@@ -1,0 +1,17 @@
+SAMPLES_JSON: 'samples.json'
+
+DATA_DIR: 'data'
+
+OUT_DIR: 'out'
+
+FASTQ_CONVERTED: 'data'
+
+FASTQC_DIR: 'out/fastqc'
+
+QC_DIR: 'out/qc_adpt_lowq_trim'
+
+CONSENSUS_DIR: 'out/consensus_seq'
+
+blast_db: "db/gtdb_16S"
+
+RESULTS_DIR: "out/results"

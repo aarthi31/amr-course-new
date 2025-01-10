@@ -1,0 +1,8 @@
+Building DAG of jobs...
+MissingInputException in rule fastqc in file /mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new1/Snakefile, line 47:
+Missing input files for rule fastqc:
+    output: results/fastqc/ERR9922933_R1_fastqc.html, results/fastqc/ERR9922933_R2_fastqc.html, results/fastqc/ERR9922933_R1_fastqc.zip, results/fastqc/ERR9922933_R2_fastqc.zip
+    wildcards: sample=ERR9922933
+    affected files:
+        data/ERR9922933_R2.fastq.gz
+        data/ERR9922933_R1.fastq.gz

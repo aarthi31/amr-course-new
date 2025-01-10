@@ -1,0 +1,6 @@
+Building DAG of jobs...
+MissingInputException in rule debug in file /mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new1/Snakefile, line 54:
+Missing input files for rule debug:
+    affected files:
+        /mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new1/data/ERR9922937_R1.fastq.gz
+        /mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new1/data/ERR9922933_R1.fastq.gz

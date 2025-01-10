@@ -1,0 +1,3 @@
+NameError in file /mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new1/Snakefile, line 26:
+name 'FASTQ_CONVERTED' is not defined
+  File "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new1/Snakefile", line 26, in <module>
