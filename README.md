@@ -63,7 +63,7 @@ where `n` is the number of cores that you want snakemake to run on.
 
 📔**Notes**
 
-1. This pipeline comes with in-built Kraken database (Standard-8). If you want to change the database, you can download it from [Kraken website](https://benlangmead.github.io/aws-indexes/k2).  
+1. This pipeline was tested with Kraken database (Standard-8, k2_standard_08gb_20240904.tar.gz). If you want to change the database, you can download it from [Kraken website](https://benlangmead.github.io/aws-indexes/k2).  Please download this database, untar it, add Kraken database to the path. 
 2. Some steps (metagenomic assembly and quality checking of bins) use a lot of memory and are time consuming. Please be aware of this!
 
 
