@@ -38,24 +38,21 @@ python make_json_new.py --fastq_dir <dir_name>
 
 Replace `<dir_name>` with the name of folder containing all the sequences.
 
-<aside>
-❗
 
-**IMPORTANT** 
+❗**IMPORTANT** 
 
 Sequences should be in the format `<sample_name>_1.fastq.gz`, `<sample_name>_2.fastq.gz`. 
 
 The directory where the sequences are should be in the following structure:
 
-`data/
+```data/
 ├── A_1.fastq.gz
 ├── A_2.fastq.gz
 ├── B_1.fastq.gz
-└── B_2.fastq.gz`
+└── B_2.fastq.gz
+```
 
-</aside>
-
-1. Run snakemake file to process all the files
+Run snakemake file to process all the files
 
 ```bash
 snakemake --cores n
@@ -63,14 +60,12 @@ snakemake --cores n
 
 where `n` is the number of cores that you want snakemake to run on.
 
-<aside>
-📔
 
-**Notes**
+📔**Notes**
 
 1. This pipeline comes with in-built Kraken database (Standard-8). If you want to change the database, you can download it from [Kraken website](https://benlangmead.github.io/aws-indexes/k2).  
 2. Some steps (metagenomic assembly and quality checking of bins) use a lot of memory and are time consuming. Please be aware of this!
-</aside>
+
 
 ## Execution framework
 
