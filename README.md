@@ -15,7 +15,7 @@ curl -L <https://github.com/conda-forge/miniforge/releases/latest/download/Mamba
 bash Mambaforge-Linux-x86_64.sh
 ```
 
-1. Using [Anaconda](https://docs.anaconda.com/free/anaconda/install/linux/) (Check terms and conditions before use).
+2. Using [Anaconda](https://docs.anaconda.com/free/anaconda/install/linux/) (Check terms and conditions before use).
 
 ## Commands to run the pipeline
 
@@ -30,7 +30,7 @@ mamba activate amr-detection
 
 ```
 
-1. Navigate to `script` folder and make a json file with all the sample details by running
+3. Navigate to `script` folder and make a json file with all the sample details by running
 
 ```python
 python make_json_new.py --fastq_dir <dir_name>
