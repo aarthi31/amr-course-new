@@ -1,6 +1,0 @@
-- "left reads":
-  - "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new/results/fastp/ERR9922933_filtered_1.fastq.gz"
-  "orientation": "fr"
-  "right reads":
-  - "/mnt/c/Users/Aarthi/Documents/GitHub/amr-course-new/results/fastp/ERR9922933_filtered_2.fastq.gz"
-  "type": "paired-end"

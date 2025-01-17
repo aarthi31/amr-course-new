@@ -1,78 +1,63 @@
 import json
-from os.path import join, basename, dirname
-
-# globals ----------------------------
+import os
+from glob import glob
 
 configfile: 'config/config.yaml'
-
-# Full path to a folder where intermediate output files will be created.
-OUT_DIR = config['OUT_DIR']
-print(OUT_DIR)
 FILES = json.load(open(config['SAMPLES_JSON']))
-print(FILES)
+#print(FILES)
 SAMPLES = sorted(FILES.keys())
-print(SAMPLES)
-FASTQC_DIR = config['FASTQC_DIR']
+#print(SAMPLES)
 
-QC_DIR = config['QC_DIR']
-
-#CONSENSUS_DIR = config['CONSENSUS_DIR']
-
-#RESULTS_DIR = config['RESULTS_DIR']
-
-#FASTQ_CONVERTED = config['FASTQ_CONVERTED']
-
-# if not os.path.exists(FASTQ_CONVERTED):
-#     os.makedirs(FASTQ_CONVERTED)
-
-
-# if not os.path.exists(FASTQC_DIR):
-#     os.makedirs(FASTQC_DIR)
-
-# if not os.path.exists(CONSENSUS_DIR):
-#     os.makedirs(CONSENSUS_DIR)
-
-# if not os.path.exists(RESULTS_DIR):
-#     os.makedirs(RESULTS_DIR)
-
+# Full path to a folder where input is and intermediate output files will be created.
+INPUT_DATA_DIR = config['INPUT_DIR']
+OUT_DIR = config['OUT_DIR']
 reads = ['1', '2']
+ABRICATE_OUT_DIR = f"{OUT_DIR}/abricate/"
+BIN_DIR = f"{OUT_DIR}/metabat_output/"
 
 rule all:
     input:
-        expand("results/fastqc/{sample}_1_fastqc.html", sample=SAMPLES),
-        expand("results/fastqc/{sample}_2_fastqc.html", sample=SAMPLES),
-        expand("results/fastp/{sample}_filtered_1.fastq.gz", sample=SAMPLES),
-        expand("results/fastp/{sample}_filtered_2.fastq.gz", sample=SAMPLES),
-        expand("results/fastqcrerun/{sample}_filtered_1_fastqc.html", sample=SAMPLES),
-        expand("results/fastqcrerun/{sample}_filtered_2_fastqc.html", sample=SAMPLES),
-        expand("results/metaspades_output/{sample}/", sample=SAMPLES)
-        # expand("results/metabat_output/{sample}/", sample=SAMPLES),
-        # expand("results/checkm_output/{sample}/", sample=SAMPLES),
-        # expand("results/kraken_folder/{sample}_kraken_report.txt", sample=SAMPLES),
-        # expand("results/kraken_folder/{sample}_kraken_output.txt", sample=SAMPLES)
+        expand(f"{OUT_DIR}/fastqc/{{sample}}_{{read}}_fastqc.html", sample=SAMPLES, read=reads),
+        expand(f"{OUT_DIR}/fastqc/{{sample}}_{{read}}_fastqc.zip", sample=SAMPLES, read=reads),
+        expand(f"{OUT_DIR}/fastp/{{sample}}_filtered_1.fastq.gz", sample=SAMPLES),
+        expand(f"{OUT_DIR}/fastp/{{sample}}_filtered_2.fastq.gz", sample=SAMPLES),
+        expand(f"{OUT_DIR}/fastqcrerun/{{sample}}_filtered_{{read}}_fastqc.html", sample=SAMPLES, read=reads),
+        expand(f"{OUT_DIR}/fastqcrerun/{{sample}}_filtered_{{read}}_fastqc.zip", sample=SAMPLES, read=reads),
+        expand(f"{OUT_DIR}/metaspades_output/{{sample}}/contigs.fasta", sample=SAMPLES),
+        expand(f"{OUT_DIR}/metabat_output/{{sample}}/check.empty", sample=SAMPLES),
+        expand(f"{OUT_DIR}/checkm_output/{{sample}}/lineage.ms", sample=SAMPLES),
+        expand(f"{OUT_DIR}/kraken_folder/{{sample}}_kraken_report.txt", sample=SAMPLES),
+        expand(f"{OUT_DIR}/kraken_folder/{{sample}}_kraken_output.txt", sample=SAMPLES),
+        expand(f"{OUT_DIR}/kraken_reads/{{sample}}_kraken_report.txt", sample=SAMPLES),
+        expand(f"{OUT_DIR}/kraken_reads/{{sample}}_kraken_output.txt", sample=SAMPLES),
+        expand(f"{OUT_DIR}/prokka/{{sample}}_prokka.log", sample=SAMPLES),
+        expand(f"{OUT_DIR}/abricate/{{sample}}/abricate_res.txt", sample=SAMPLES)
+
 rule fastqc:
     input:
-        r1="data/{sample}_1.fastq.gz",
-        r2="data/{sample}_2.fastq.gz"
+        r1=lambda wildcards: FILES[wildcards.sample]["1"][0],  # Access the 1st read for the sample
+        r2=lambda wildcards: FILES[wildcards.sample]["2"][0] 
+        #r1=f"{INPUT_DATA_DIR}/{{sample}}_1.fastq.gz",
+        #r2=f"{INPUT_DATA_DIR}/{{sample}}_2.fastq.gz"
     output:
-        r1_qc="results/fastqc/{sample}_1_fastqc.html",
-        r2_qc="results/fastqc/{sample}_2_fastqc.html",
-        r1_qc_zip="results/fastqc/{sample}_1_fastqc.zip",
-        r2_qc_zip="results/fastqc/{sample}_2_fastqc.zip"
+        r1_qc=f"{OUT_DIR}/fastqc/{{sample}}_{{reads}}_fastqc.html",
+        r2_qc=f"{OUT_DIR}/fastqc/{{sample}}_{{reads}}_fastqc.zip"
     params:
         fastqc_opts="--threads 4"
     shell:
-        "fastqc {params.fastqc_opts} -o results/fastqc {input.r1} {input.r2}"
+        "fastqc {params.fastqc_opts} {input.r1} {input.r2} --outdir=results/fastqc "
 
 rule fastp:
     input:
-        r1="data/{sample}_1.fastq.gz",
-        r2="data/{sample}_2.fastq.gz"
+        r1=lambda wildcards: FILES[wildcards.sample]["1"][0],  # Access the 1st read for the sample
+        r2=lambda wildcards: FILES[wildcards.sample]["2"][0] 
+        #r1=f"{INPUT_DATA_DIR}/{{sample}}_1.fastq.gz",
+        #r2=f"{INPUT_DATA_DIR}/{{sample}}_2.fastq.gz"
     output:
-        r1_filtered="results/fastp/{sample}_filtered_1.fastq.gz",
-        r2_filtered="results/fastp/{sample}_filtered_2.fastq.gz",
-        json="results/fastp/{sample}_fastp.json",
-        html="results/fastp/{sample}_fastp.html"
+        r1_filtered=f"{OUT_DIR}/fastp/{{sample}}_filtered_1.fastq.gz",
+        r2_filtered=f"{OUT_DIR}/fastp/{{sample}}_filtered_2.fastq.gz",
+        json=f"{OUT_DIR}/fastp/{{sample}}_fastp.json",
+        html=f"{OUT_DIR}/fastp/{{sample}}_fastp.html"
     params:
         fastp_opts="--thread 4 --detect_adapter_for_pe"
     shell:
@@ -82,76 +67,106 @@ rule fastp:
 
 rule fastqcrerun:
     input:
-        r1="results/fastp/{sample}_filtered_1.fastq.gz",
-        r2="results/fastp/{sample}_filtered_2.fastq.gz"
+        r1=f"{OUT_DIR}/fastp/{{sample}}_filtered_1.fastq.gz",
+        r2=f"{OUT_DIR}/fastp/{{sample}}_filtered_2.fastq.gz"
     output:
-        r1_qc="results/fastqcrerun/{sample}_filtered_1_fastqc.html",
-        r2_qc="results/fastqcrerun/{sample}_filtered_2_fastqc.html",
-        r1_qc_zip="results/fastqcrerun/{sample}_filtered_1_fastqc.zip",
-        r2_qc_zip="results/fastqcrerun/{sample}_filtered_2_fastqc.zip"
+        r1_qc=f"{OUT_DIR}/fastqcrerun/{{sample}}_filtered_{{reads}}_fastqc.html",
+        r2_qc=f"{OUT_DIR}/fastqcrerun/{{sample}}_filtered_{{reads}}_fastqc.zip"
     params:
-        fastqc_opts="--threads 4"
+        fastqc_opts="--threads 4",
+        outdir=f"{OUT_DIR}/fastqcrerun"
     shell:
-        "fastqc {params.fastqc_opts} -o results/fastqcrerun {input.r1} {input.r2}"
+        "fastqc {params.fastqc_opts} --outdir={params.outdir} {input.r1} {input.r2}"
 
 rule assembly:
     input:
-        r1="results/fastp/{sample}_filtered_1.fastq.gz",
-        r2="results/fastp/{sample}_filtered_2.fastq.gz"
+        r1=f"{OUT_DIR}/fastp/{{sample}}_filtered_1.fastq.gz",
+        r2=f"{OUT_DIR}/fastp/{{sample}}_filtered_2.fastq.gz"
     output:
-        assembly="results/metaspades_output/{sample}/"
+        assembly=f"{OUT_DIR}/metaspades_output/{{sample}}/contigs.fasta"
+    params:
+        f"{OUT_DIR}/metaspades_output/{{sample}}"
     shell:
-        "metaspades.py -1 {input.r1} -2 {input.r2} -o {output.assembly}"
+        "metaspades.py -1 {input.r1} -2 {input.r2} -o {params}"
 
 rule binning:
     input:
-        contig = "results/metaspades_output/{sample}/contigs.fasta"
+        contig =f"{OUT_DIR}/metaspades_output/{{sample}}/contigs.fasta"
     output:
-        bins="results/metabat_output/{sample}/"
+        f"{OUT_DIR}/metabat_output/{{sample}}/check.empty"
+    params:
+        f"{OUT_DIR}/metabat_output/{{sample}}/bin"
     shell:
-        "metabat2 -i {input.contig} -o {output.bins} -m 1500"
+        "metabat2 -i {input.contig} -o {params} -m 1500 && touch {output}"
 
-# rule qualitycontrol:
-#     input:
-#         bins="results/metabat_output/{sample}/"
-#     output:
-#         cm = "results/checkm_output/{sample}/"
-#     shell:
-#         "checkm lineage_wf {input.bins} {output.cm}"
+rule qualitycheck:
+    input:
+        bins=f"{OUT_DIR}/metabat_output/{{sample}}/check.empty"
+    output:
+        cm = f"{OUT_DIR}/checkm_output/{{sample}}/lineage.ms"
+    params:
+        cmop = f"{OUT_DIR}/checkm_output/{{sample}}/",
+        sample=f"{OUT_DIR}/metabat_output/{{sample}}/"
+    shell:
+        "checkm lineage_wf -x fa -t 8 {params.sample} {params.cmop} --pplacer_threads 8"
 
-# rule kraken:
-#     input:
-#         contig = "results/metaspades_output/{sample}/contigs.fasta"
-#     output:
-#         krreport = "results/kraken_folder/{sample}_kraken_report.txt"
-#         kroutput = "results/kraken_folder/{sample}_kraken_output.txt"
-#     params:
-#         db= config["kraken_db"]
-#     shell:
-#         "kraken2 --db {params.db} --threads 8 --output {output.kroutput} --report {output.krreport} {input.contig}"
+rule kraken:
+     input:
+         contig = f"{OUT_DIR}/metaspades_output/{{sample}}/contigs.fasta"
+     output:
+         krreport = f"{OUT_DIR}/kraken_folder/{{sample}}_kraken_report.txt",
+         kroutput = f"{OUT_DIR}/kraken_folder/{{sample}}_kraken_output.txt"
+     log:
+        f"{OUT_DIR}/kraken_folder/{{sample}}.log"
+     params:
+         db= config["kraken_db"]
+     shell:
+         "kraken2 --db {params.db} --threads 8 --output {output.kroutput} --report {output.krreport} {input.contig} > {log} 2>&1"
 
+rule kraken_reads:
+     input:
+        r1=f"{OUT_DIR}/fastp/{{sample}}_filtered_1.fastq.gz",
+        r2=f"{OUT_DIR}/fastp/{{sample}}_filtered_2.fastq.gz"
+     output:
+         krreport = f"{OUT_DIR}/kraken_reads/{{sample}}_kraken_report.txt",
+         kroutput = f"{OUT_DIR}/kraken_reads/{{sample}}_kraken_output.txt"
+     log:
+        f"{OUT_DIR}/kraken_reads/{{sample}}.log"
+     params:
+         db= config["kraken_db"]
+     shell:
+         "kraken2 --db {params.db} --threads 8 --output {output.kroutput} --report {output.krreport} {input.r1} {input.r2} > {log} 2>&1"
 
+rule run_prokka:
+     input:
+        fasta = f"{OUT_DIR}/metaspades_output/{{sample}}/contigs.fasta"
+     output:
+        f"{OUT_DIR}/prokka/{{sample}}_prokka.log"  # Prokka generates a directory for each genome but need to specify file for dag
+     params:
+        outdir = f"{OUT_DIR}/prokka/{{sample}}",  # Output directory for Prokka
+        prefix = "{sample}"  # Prefix for output files
+     log:
+        f"{OUT_DIR}/prokka/{{sample}}_prokka.log"
+     shell:
+        """
+        #touch {output}
+        prokka --outdir {params.outdir} --centre X --compliant --prefix {params.prefix} {input.fasta} > {log} 2>&1
+        """
+#print( expand(f"{OUT_DIR}/abricate/{{sample}}/{{bin}}/abricate_check.empty", sample=SAMPLES,
+             #  bin=[bin for bin in get_all_bins()]))
 
-# #include:"rules/convert_to_fastq.smk"
-# #include:"rules/reverse_complement.smk"
-# include:"rules/fastqc.smk"
-# #include:"rules/adapter_lowqual.smk"
-# #include:"rules/make_consensus.smk"
-# #include:"rules/blast_rules.smk"
-# #include:"rules/blast_top_hits.smk"
-# #include:"rules/merge_all_res.smk"
-
-# rule all:
-#     input:
-#        expand(FASTQ_CONVERTED + "/{sample}_1.fastq", sample=SAMPLES),
-#        expand(FASTQ_CONVERTED + "/{sample}_2.fastq", sample=SAMPLES),
-#        expand(FASTQ_CONVERTED + "/{sample}_rc.fastq", sample=SAMPLES),
-#        expand(FASTQC_DIR + "/{sample}_{read}_fastqc.html", sample=SAMPLES, read=reads),
-#        expand(FASTQC_DIR + "/{sample}_{read}_fastqc.zip", sample=SAMPLES, read=reads),
-#        #expand(QC_DIR + "/{sample}_{read}_QC.fastq", sample=SAMPLES, read=reads),
-#        #expand(CONSENSUS_DIR + "/{sample}_consensus.fasta", sample=SAMPLES),
-#        #expand(CONSENSUS_DIR + "/{sample}_consensus.aln", sample=SAMPLES),
-#        #expand(OUT_DIR+"/blast/{sample}.tsv", sample=SAMPLES),
-#        #expand(OUT_DIR+"/blast-tophits/{sample}-tophits.tsv", sample=SAMPLES),
-#        #os.path.join(RESULTS_DIR, 'final_results.csv')
-
+rule run_abricate:
+    input:
+        f"{OUT_DIR}/metabat_output/{{sample}}/check.empty"
+        #fasta=f"{OUT_DIR}/metabat_output/{{sample}}/{{bin}}.faa"
+    output:
+        f"{OUT_DIR}/abricate/{{sample}}/abricate_res.txt"
+    params:
+        #txt=f"{OUT_DIR}/abricate/{{sample}}/{{bin}}_abricate.txt",
+        fasta=f"{OUT_DIR}/metabat_output/{{sample}}/"
+    #log:
+    #    f"{OUT_DIR}/abricate/{{sample}}/{{bin}}.log"
+    shell:
+        """
+        abricate --db resfinder {params.fasta}/*.fa > {output}
+        """

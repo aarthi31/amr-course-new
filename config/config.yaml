@@ -1,15 +1,8 @@
 SAMPLES_JSON: 'samples.json'
 
-OUT_DIR: 'out'
+OUT_DIR: 'results'
 
-FASTQ_CONVERTED: 'data'
+INPUT_DIR: 'data'
 
-FASTQC_DIR: 'out/fastqc'
+kraken_db: "db"
 
-QC_DIR: 'out/qc_adpt_lowq_trim'
-
-CONSENSUS_DIR: 'out/consensus_seq'
-
-blast_db: "db/minikraken"
-
-RESULTS_DIR: "out/results"

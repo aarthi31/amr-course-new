@@ -1,0 +1,16 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - python
+  - snakemake
+  - biopython
+  - pandas
+  - seaborn
+  - ete3
+  - fastp=0.24.0
+  - checkm-genome
+  - fastqc
+  - metabat2
+  - prokka
+  - abricate 
