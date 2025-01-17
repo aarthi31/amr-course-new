@@ -52,7 +52,7 @@ The directory where the sequences are should be in the following structure:
 └── B_2.fastq.gz
 ```
 
-Run snakemake file to process all the files
+Run snakemake file to process all the files in the directory where Snakemake file is.
 
 ```bash
 snakemake --cores n
